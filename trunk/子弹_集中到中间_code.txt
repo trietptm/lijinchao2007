@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: GBK -*-
 #author:李金潮
-#version:子弹_集中到中间
+#version:子弹_集中到中间(带预判位置)
 
 import GameWorld 
 import GameComm

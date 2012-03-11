@@ -26,10 +26,10 @@ posDict = {} # handle:(x,y)
 # 本ai把所有的位置和方向都换算成了以屏幕左上为原点的坐标系
 def ProcessAI(UnitHandle):
     #武器起始位置
-    firestart = 8
-    #firestart = 7
-    fireend = 33
-    #fireend = 13
+    #firestart = 8
+    #fireend = 33
+    firestart = 7
+    fireend = 11
     
     #子弹速度
     boomSpeed = 3
