@@ -6,7 +6,7 @@ AI=lijinchaoex.py
 
 ;--视图相关属性
 ;start 6
-;end 32
+;end 33
 PartCount=33
 Part0_Name=Eye
 Part0_PosX=40

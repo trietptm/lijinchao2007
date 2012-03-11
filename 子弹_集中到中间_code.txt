@@ -29,7 +29,7 @@ def ProcessAI(UnitHandle):
     #武器起始位置
     firestart = 6
     #firestart = 7
-    fireend = 32
+    fireend = 33
     #fireend = 13
     
     #子弹速度
@@ -203,7 +203,7 @@ def GetFireDegress(target, dis):
     
     tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (16 * dis)
     #log("#######panduan: " + str(panduan))
-    degrees = math.degrees(math.asin(tanValue))
+    degrees = math.degrees(math.atin(tanValue))
     #log('####开火的角度:' + str(degrees))                 
     return degrees
 
