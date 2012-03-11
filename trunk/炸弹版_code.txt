@@ -8,7 +8,8 @@ import math
 import time
 
 AI_NAME = "lijinchao"
-
+MoveValue = 3
+RollValue = 5
 # 调试信息输出
 def log(argv, flag=True):
     if flag:
@@ -27,7 +28,7 @@ def ProcessAI(UnitHandle):
     fireend = 12
     
     #处理距离,若超出此距离则要向目标或者屏幕中央移动
-    MinDis = 500
+    MinDis = 600
     
     #使用眼睛的时间间隔
     interval = 6000
@@ -62,7 +63,7 @@ def ProcessAI(UnitHandle):
     MinTime = 10000
     for i in danger:
         MinTime = min(MinTime, i[0] * i[1])  # 距离*弹药移动速度等于打中的时间
-    if MinTime < 330 and GW.GetUnitPartInfoByIndex(UH, 3).IsDuringCD == 0:
+    if MinTime < 300 and GW.GetUnitPartInfoByIndex(UH, 3).IsDuringCD == 0:
         log("###闪避:" + str(MinTime))
         return "4 3"
     
@@ -96,11 +97,11 @@ def ProcessAI(UnitHandle):
     # 遍历完成未能开火
     if temDis < MinDis and temMinDir < 100 and  Plus: # 左转
         log("$$$$左转", 1)
-        return "1 %d" % min(10, int(MinDir))
+        return "1 %d" % min(RollValue, int(MinDir))
     
     if temDis < MinDis and temMinDir < 100 and not Plus: # 右转
         log("$$$$右转", 1)
-        return "2 %d" % min(10, int(math.fabs(MinDir)))
+        return "2 %d" % min(RollValue, int(math.fabs(MinDir)))
                 
     # 若是最小偏差的火炮都难以转向,则移动到最近的敌人旁边           
     log("##########move to 最近的生物") 
@@ -129,13 +130,13 @@ def Move(selfinfo, x, y):
     dir = (GetDegress(selfinfo.Dir) - degress + 180) % 360
 
     if (dir >= 0 and dir <= 45) or (dir >= 315 and dir <= 360):
-        return "7 10"  # 后退
+        return "7 %d" % MoveValue  # 后退
     if dir > 45 and dir < 135:
-        return "5 10"  # 左移    
+        return "5 %d" % MoveValue  # 左移    
     if dir >= 135 and dir < 225:
-        return "3 10"  # 前进
+        return "3 %d" % MoveValue  # 前进
     if dir >= 225 and dir < 315:
-        return "6 10"  # 右移动
+        return "6 %d" % MoveValue  # 右移动
                     
 #param:自己实例 目标实例
 #return 距离 和  面向偏差角度            

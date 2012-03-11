@@ -5,7 +5,7 @@ Image=Units\lijinchaoex\egg.bmp
 AI=lijinchaoex.py
 
 ;--视图相关属性
-;start 8
+;start 6
 ;end 32
 PartCount=33
 Part0_Name=Eye
@@ -24,26 +24,26 @@ Part2_PosY=40
 Part2_Dir=180
 
 
-Part3_Name=Flagellum
+Part3_Name=Thruster
 Part3_PosX=40
 Part3_PosY=40
-Part3_Dir=270
+Part3_Dir=180
 
 Part4_Name=Flagellum
 Part4_PosX=40
 Part4_PosY=40
-Part4_Dir=0
+Part4_Dir=90
 
 
 Part5_Name=Flagellum
 Part5_PosX=40
 Part5_PosY=40
-Part5_Dir=90
+Part5_Dir=270
 
-Part6_Name=Flagellum
+Part6_Name=Nozzle
 Part6_PosX=40
 Part6_PosY=40
-Part6_Dir=180
+Part6_Dir=336
 
 Part7_Name=Nozzle
 Part7_PosX=40
@@ -175,10 +175,10 @@ Part32_PosX=40
 Part32_PosY=40
 Part32_Dir=322
 
-Part33_Name=Nozzle
-Part33_PosX=40
-Part33_PosY=40
-Part33_Dir=336
+;Part33_Name=Nozzle
+;Part33_PosX=40
+;Part33_PosY=40
+;Part33_Dir=336
 
 ;Part34_Name=Nozzle
 ;Part34_PosX=40
