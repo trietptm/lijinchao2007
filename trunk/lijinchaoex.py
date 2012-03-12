@@ -10,7 +10,7 @@ import time
 
 AI_NAME = "lijinchaoex"
 # 调试信息输出
-def log(argv, flag=False):
+def log(argv, flag=True):
     if flag:
         output = AI_NAME
         output += "####" + str(type(argv)) + ": " + str(argv) 
@@ -23,8 +23,12 @@ BuffTick = 0
 posDict = {} # handle:(x,y)
 INFINITE = 9999999999
 LastTick = INFINITE
+temTick = 0
+idd = 0
 # 本ai把所有的位置和方向都换算成了以屏幕左上为原点的坐标系
 def ProcessAI(UnitHandle):
+    global temTick
+    global idd
     #武器起始位置
     firestart = 5
     fireend = 6
@@ -35,7 +39,7 @@ def ProcessAI(UnitHandle):
     
     #处理距离,若超出此距离则要向目标或者屏幕中央移动
     MinDis = 550
-    MaxDis = 100
+    MaxDis = 250
     #使用眼睛的时间间隔
     interval = 12000   
     global BuffTick
@@ -47,9 +51,13 @@ def ProcessAI(UnitHandle):
     
     UH = UnitHandle
     GW = GameWorld.IPY_GameWorld()
-    selfInfo = GW.GetUnitInfo(UH)       
+    selfInfo = GW.GetUnitInfo(UH)    
+    log("%d---------------------------------------------------------" % idd)
+    log(GW.GetCpuTick() - temTick)
+    temTick = GW.GetCpuTick()   
+    idd = idd + 1
     #移动或者转动的最大值
-    tt, RollValue = GetBestMoveAndDir(selfInfo, Def_Max_AI_Tick)
+    MoveSpeed, RollValue = GetBestMoveAndDir(selfInfo, Def_Max_AI_Tick)
     
     #遍历周围生物
     clist = []  # 存储creatur
@@ -58,51 +66,22 @@ def ProcessAI(UnitHandle):
         h = GW.GetNearUnitHandleByIndex(UH, i)
         info = GW.GetUnitInfo(h)
         dis, dir = GetDisAndDir(selfInfo, info)  #得到与目标的距离和在绝对坐标系中的方向(此处为修订后的结果)
-        if info.Type == 'food':
-                # 使用flipper
-            if GW.CheckUnitBuff(UH, 'Fast') == 0:
-                return "4 4"
-            log('food')
-            return Move(selfInfo, info.PosX, info.PosY)
         
         if info.Type == 'creature' and h != GW:
-            #dis, dir = GetDisAndDir(selfInfo, info)  #得到与目标的距离和在绝对坐标系中的方向
-            #bulletTime = bulletSpeed * dis # 子弹飞行所需时间
-            SetFuturePox(info, 100)  # 修订目标200ms后的位置
-
-            
+                       
             MinDir = GetFireDegress(info, dis)  # 开火能够命中的最大偏差角度
             clist.append([dis, dir, MinDir, info]) # 距离, 角度, 命中的最大偏差, 敌人信息
    
         if info.Type in ['bullet', 'missile', 'bombbullet'] and info.MasterId != selfInfo.ID:
-            #log("###子弹速度 :" + str(info.Type) + ":" + str(info.MoveSpeed))
 
-            if dis * info.MoveSpeed > 330: # 伤害超出200ms的范围,则暂不考虑
+            if dis * info.MoveSpeed > 360: # 伤害超出200ms的范围,则暂不考虑
                 continue
-            if math.cos(math.radians(dir - info.Dir)) > 0: # 说明子弹已经躲过去了
-                log("####过去的子弹")
-                continue
-            log('#####加入danger')
+#            if math.cos(math.radians(dir - info.Dir)) > 0: # 说明子弹已经躲过去了
+#                log("####过去的子弹,dis:" + str(dis))
+#                continue
+            log('#####加入danger,dis:' + str(dis))
             danger.append([dis, info])
-            
-        if info.Type == 'creature':
-            ds, dr = GetDisAndDir(selfInfo, info)
-    
-            if ds < MaxDis + 60: # 被追了一段时间就thruster
-                log("lasttick: " + str(LastTick))
-                if LastTick == INFINITE:
-                    LastTick = LastTick = GW.GetCpuTick()
-                if GW.GetCpuTick() - LastTick > 1200: #被人追了3秒
-                    if GW.GetUnitPartInfoByIndex(UH, 11).IsDuringCD == 0:
-                        log('####被追了很久...')
-                        return "4 11"
-            else:
-                LastTick = INFINITE
-            
-            if GW.CheckUnitBuff(info.Handle, 'PowerShield') and ds < 100:  # 对方用盾 跑
-                if GW.GetUnitPartInfoByIndex(UH, 11).IsDuringCD == 0:
-                        return "4 11"
-                
+ 
     # 按距离排序
     clist.sort(key=lambda x:x[0])   
     danger.sort(key=lambda x:x[0])   
@@ -110,7 +89,7 @@ def ProcessAI(UnitHandle):
     # 闪避
     MinTime = 10000
     for i in danger:
-        log("##########闪避")
+
         return ShanBi(selfInfo, i[1])
     
     #存储最小的角度 及相应的距离
@@ -124,36 +103,23 @@ def ProcessAI(UnitHandle):
             temMinDir = selfdir - l[1] #角度差
             temDis = l[0]
 
-        
-        if (dirCos > math.cos(math.radians(l[2]))) or dirCos > 0.9994:
-            for i in [6, 12]:
-                if GW.GetUnitPartInfoByIndex(UH, i).IsDuringCD == 0:
-                    log("###武器6")
-                    return "4 %d" % i
-            
-#        if (dirCos > math.cos(math.radians(l[2]))) and l[0] < 280 and l[0] < 220 : #加速
-#            for i in range(3, 4):
-#                if  GW.GetUnitPartInfoByIndex(UH, i).IsDuringCD == 0:
-#                    log("###加速:")
-#                    return "4 %d" % i
-        #开炮
-    #重合后退    
-    if temDis == 0:
-        log('###退后')
-        return "7 %d" % GetBestMoveAndDir(selfInfo, Def_Max_AI_Tick)[0]
-    
     # 使用flipper
     if GW.CheckUnitBuff(UH, 'Fast') == 0:
+        log('启用flipper')
         return "4 4"
                        
     # 遍历完成未能 咬人
     # 距离要在mindis以内,且角度要大于能够加速的角度
     if temDis <= MinDis and (temDis >= MaxDis) and (dirCos < math.cos(math.radians(l[2]))) :
-        log(temMinDir)
+        log("偏转角度: " + str(temMinDir))
         result = math.fabs(temMinDir) 
         if result > 180:
             result = 360 - result
-            
+        
+        if result > 90:  # 角度太大,前进
+            log("$$$$前进")
+            return MoveSpeed[3] 
+        
         if math.sin(math.radians(temMinDir)) > 0:
             log("$$$$左转", 1)
             return "1 %d" % min(RollValue, int(result))
@@ -162,13 +128,15 @@ def ProcessAI(UnitHandle):
             return "2 %d" % min(RollValue, int(result))
         
     # 若是太远,则移动到最近的敌人旁边 但在40-570间          
-    log("##########move to 最近的生物") 
+
     if len(clist) > 0:
         near = clist[0]
         nearInfo = clist[0][3]
         if near[0] > MinDis:
+            log("####走进")
             return Move(selfInfo, nearInfo.PosX, nearInfo.PosY)
         if near[0] < MaxDis:
+            log("####远离")
             x1, y1 = [selfInfo.PosX, selfInfo.PosY]
             x2, y2 = [nearInfo.PosX, nearInfo.PosY]
             x = x2 + (x1 - x2) * MaxDis / near[0]
@@ -181,32 +149,12 @@ def ProcessAI(UnitHandle):
                 eye = GW.GetUnitPartInfoByIndex(UH, i)
                 if eye.IsDuringCD == 0:
                     BuffTick = GW.GetCpuTick()  #记录时间
+                    log("#### 启动眼睛")
                     return "4 %d" % i
         #若以上均未操作,则向中间移动   
+        log("向中间移动")
         return Move(selfInfo, width, height)         
-  
-# boomTime后,修订info的位置
-# 有一部分生物总是在附近转来转去,第一次
-def SetFuturePox(info, boomTime):
-    global posDict
-    #第一次出现
-    if not posDict.has_key(info.Handle):
-        posDict.update({info.Handle:(info.PosX, info.PosY)})
-        return
-    
-    
-    (lx, ly) = posDict[info.Handle]
 
-    dir = info.MoveSpeed
-    x = info.PosX
-    y = info.PosY
-    
-    # 未来的位置
-    #info.PosX = max(0, int(boomTime * (x - lx) / 100 + x))
-    #info.PosY = max(0, int(boomTime * (y - ly) / 100 + y))
-    # 储存当前位置
-    posDict.update({info.Handle:(x, y)})
-         
 #移动到某点
 # 小于25度移动
 # 大于25小于45 转动
@@ -218,14 +166,15 @@ def Move(selfinfo, x, y):
     dir = (GetDegress(selfinfo.Dir) - degress + 180) % 360
     
     MoveValue, tt = GetBestMoveAndDir(selfinfo, Def_Max_AI_Tick)
+    log("#########移动距离:" + str(MoveValue))
     if (dir >= 0 and dir <= 45) or (dir >= 315 and dir <= 360):
-        return "7 %d" % MoveValue  # 后退
+        return MoveValue[7]  # 后退
     if dir > 45 and dir < 135:
-        return "5 %d" % MoveValue   # 左移    
+        return MoveValue[5]   # 左移    
     if dir >= 135 and dir < 225:
-        return "3 %d" % MoveValue  # 前进
+        return MoveValue[3]  # 前进
     if dir >= 225 and dir < 315:
-        return "6 %d" % MoveValue   # 右移动
+        return MoveValue[6]   # 右移动
                     
 #param:自己实例 目标实例
 #return 距离 和  面向偏差角度            
@@ -243,24 +192,11 @@ def GetDisAndDir(selfInfo, info):
 # 得到多少度可以开火(mindir)
 def GetFireDegress(target, dis):
     panduan = math.fabs(target.BodyHeight - target.BodyWidth) 
-    # 敌人的宽高比越小,则需要瞄准的角度越要精确
-#    if panduan < 25: 
-#        tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (6 * dis)
-#    elif panduan < 40: 
-#        tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (5 * dis)
-#    elif panduan < 55: 
-#        tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (4 * dis)
-#    elif panduan < 70: 
-#        tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (3 * dis)
-#    else:
-#        tanValue = (target.BodyWidth + target.BodyHeight) * 2 / (2 * dis)
     if dis != 0:
         tanValue = (5) * 2 / (2 * dis)
     else:
         tanValue = 999
-    #log("#######panduan: " + str(panduan))
-    degrees = math.degrees(math.atan(tanValue))
-    #log('####开火的角度:' + str(degrees))                 
+    degrees = math.degrees(math.atan(tanValue))             
     return degrees
 
 #根据x y 得到在坐标系中的度数
@@ -274,23 +210,36 @@ def GetDegress(dir):
     return (dir + 270) % 360    
 
 def GetBestMoveAndDir(selfInfo, AiTick):
-    Dis = int(AiTick / selfInfo.MoveSpeed)
-    Dir = int(AiTick / selfInfo.RollSpeed)
+    moveSpeed = selfInfo.MoveSpeed
+    upMoveDis = int(AiTick / (moveSpeed * 1.1))
+    downMoveDis = int((AiTick) / (moveSpeed * 1.5))
+    sideMoveDis = int((AiTick) / (moveSpeed * 1.3))
+    cmdDict = {}
+    cmdDict[3] = "3 %d" % upMoveDis
+    cmdDict[7] = "7 %d" % downMoveDis
+    cmdDict[5] = "5 %d" % sideMoveDis
+    cmdDict[6] = "6 %d" % sideMoveDis
 
-    return Dis, Dir
+   
+    Dir = int(AiTick / selfInfo.RollSpeed)
+    return cmdDict, Dir
 
 def ShanBi(selfInfo, Info):
     selfDir = selfInfo.Dir
     dd, enemyDir = GetDisAndDir(Info, selfInfo) #敌人朝向我的方向
     infoDir = Info.Dir  #敌人自己的方向
     MoveValue, tt = GetBestMoveAndDir(selfInfo, Def_Max_AI_Tick)
-    
+    log("####return闪避距离:" + str(MoveValue))
     dir = (selfDir - enemyDir) % 360 
     if (dir >= 0 and dir <= 45) or (dir >= 315 and dir <= 360):
-        return "7 %d" % MoveValue  # 后退
+        log("##########后,dir: " + str(dir))
+        return MoveValue[7]  # 后退
     if dir > 45 and dir < 135:
-        return "5 %d" % MoveValue   # 左移    
+        log("##########左,dir: " + str(dir))
+        return MoveValue[5]   # 左移    
     if dir >= 135 and dir < 225:
-        return "3 %d" % MoveValue  # 前进
+        log("##########前,dir: " + str(dir))
+        return MoveValue[3]  # 前进
     if dir >= 225 and dir < 315:
-        return "6 %d" % MoveValue   # 右移动
+        log("##########右,dir: " + str(dir))
+        return  MoveValue[6]   # 右移动
