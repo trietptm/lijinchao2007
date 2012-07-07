@@ -80,7 +80,8 @@ class debugger():
         
         if kernel32.WaitForDebugEvent(byref(debug_event), INFINITE):
 #            raw_input("点击继续...")
-#            self.debugger_active = False
+            print "get_debug_event"
+            self.debugger_active = False
             kernel32.ContinueDebugEvent(\
                                         debug_event.dwProcessId, \
                                         debug_event.dwThreadId, \
@@ -95,5 +96,72 @@ class debugger():
         else:
             print "结束调试错误!"
             return False
+      
         
+    # 枚举线程
+    def enumerate_thread(self):
         
+        thread_entry = THREADENTRY32()
+        thread_list = []
+        snapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, self.pid)
+        
+        if snapshot:
+            
+            # 便利句柄中的线程
+            thread_entry.dwSize = sizeof(thread_entry)
+            sucess = kernel32.Thread32First(snapshot, byref(thread_entry))
+            
+            while sucess:
+                if thread_entry.th32OwnerProcessID == self.pid:
+                    thread_list.append(thread_entry.th32ThreadID)
+                sucess = kernel32.Thread32Next(snapshot, byref(thread_entry))
+            kernel32.CloseHandle(snapshot)
+            return thread_list
+        else:
+            return False
+        
+    # 获取寄存器信息
+    def get_thread_context(self, thread_id=None, h_thread=None):
+        
+        context = CONTEXT()
+        context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS
+        
+        # 获取线程句柄
+        h_thread = self.open_thread(thread_id)
+        print "获取的句柄：0x%08x" % h_thread
+        if kernel32.GetThreadContext(h_thread, byref(context)):
+            kernel32.CloseHandle(h_thread)
+            return context
+        else:
+            return False
+            
+            
+    
+    # 获取线程句柄
+    def open_thread(self, thread_id):
+        
+        h_thread = kernel32.OpenThread(THREAD_ALL_ACCESS, None, thread_id)
+        
+        if h_thread:
+            return h_thread
+        else:
+            print " 无法获取句柄：threadid： 0x%08x" % thread_id
+            return False
+            
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
