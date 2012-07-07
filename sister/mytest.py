@@ -9,4 +9,20 @@ debugger = my_debugger.debugger()
 pid = raw_input(" ‰»Îpid: ")
 debugger.attach(int(pid))
 
+threadList = debugger.enumerate_thread()
+
+for thread in threadList:
+    
+    thread_context = debugger.get_thread_context(thread)
+    if thread_context:
+        print "[*] œﬂ≥Ãid£∫ 0x%08x " % thread
+        print "[**] EIP:  0x%08x " % thread_context.Eip
+        print "[**] ESP:  0x%08x " % thread_context.Esp
+        print "[**] EBP:  0x%08x " % thread_context.Ebp
+        print "[**] EAX:  0x%08x " % thread_context.Eax
+        print "[**] EBX:  0x%08x " % thread_context.Ebx
+        print "[**] ECX:  0x%08x " % thread_context.Ecx
+        print "[**] EDX:  0x%08x " % thread_context.Edx
+        print 
+    
 debugger.detach()
