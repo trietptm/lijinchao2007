@@ -81,7 +81,10 @@ class debugger():
         if kernel32.WaitForDebugEvent(byref(debug_event), INFINITE):
 #            raw_input("点击继续...")
             print "get_debug_event"
-            self.debugger_active = False
+            self.h_thread = self.open_thread(debug_event.dwThreadId)
+            #self.context = self.get_thread_context(thread_id, h_thread)
+            print "事件码：%s， 线程id：%s， 进程id：%s" % (debug_event.dwDebugEventCode, debug_event.dwThreadId, debug_event.dwProcessId)
+            #self.debugger_active = False
             kernel32.ContinueDebugEvent(\
                                         debug_event.dwProcessId, \
                                         debug_event.dwThreadId, \
