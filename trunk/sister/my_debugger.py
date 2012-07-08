@@ -159,6 +159,7 @@ class debugger():
         # determine if this single step event occured in reaction to a hardware breakpoint and grab the hit breakpoint.
         # according to the Intel docs, we should be able to check for the BS flag in Dr6. but it appears that windows
         # isn't properly propogating that flag down to us.
+        slot = 0
         if self.context.Dr6 & 0x1 and self.hardware_breakpoints.has_key(0):
             slot = 0
 
