@@ -10,17 +10,17 @@ SecondFuncList = []
 MinuteFuncList = []
 HourFuncList = []
 
-g_second = 0
-g_minute = 0
-g_hourt = 0
+g_second = -1
+g_minute = -1
+g_hourt = -1
 
-def RegisterTime(func, count=-1, second=0, minute=0, hour=0):
+def RegisterTime(func, count=-1, second=-1, minute=-1, hour=-1):
     if count == 0:
         ErrLog("次数不可为0")
         return
     
     funcDict = {"func":func, "second":second, "minute":minute, "hour":hour, "count":count, "passed":False}
-    if hour:
+    if hour != -1:
         if funcDict in HourFuncList:
             ErrLog("已经注册了", funcDict)
             return
@@ -29,7 +29,7 @@ def RegisterTime(func, count=-1, second=0, minute=0, hour=0):
         HourFuncList.append(funcDict)
         return
     
-    if minute:
+    if minute != -1:
         if funcDict in MinuteFuncList:
             ErrLog("已经注册了", funcDict)
             return
@@ -38,7 +38,7 @@ def RegisterTime(func, count=-1, second=0, minute=0, hour=0):
         MinuteFuncList.append(funcDict)
         return
     
-    if second:
+    if second != -1:
         if funcDict in SecondFuncList:
             ErrLog("已经注册了", funcDict)
             return
@@ -46,86 +46,84 @@ def RegisterTime(func, count=-1, second=0, minute=0, hour=0):
         Log("注册了秒函数", funcDict)
         SecondFuncList.append(funcDict)
         return
-    
 
+def OnHour(hour):
+    Log("HourFuncList", HourFuncList)
+    # 小时计时器
+    for funcDict in copy.copy(HourFuncList):
+        if hour == funcDict["hour"]:
+            copyDict = copy.copy(funcDict)
+            copyDict["count"] = 1
+            MinuteFuncList.append(copyDict)
+                
+            if funcDict["count"] != -1:
+                funcDict["count"] -= 1
+            
+            if funcDict["count"] == 0:
+                HourFuncList.remove(funcDict)
+    Log("HourFuncList", HourFuncList)
     
+def OnMinute(minute):
+    Log("MinuteFuncList", MinuteFuncList)
+    # 分钟计时器
+    for funcDict in copy.copy(MinuteFuncList):
+        if minute == funcDict["minute"]:
+            copyDict = copy.copy(funcDict)
+            copyDict["count"] = 1
+            # 加入秒计时
+            SecondFuncList.append(copyDict)
+            
+            if funcDict["count"] != -1:
+                funcDict["count"] -= 1
+            if funcDict["count"] == 0:
+                MinuteFuncList.remove(funcDict)
+            # 此轮已经运行过
+            funcDict["passed"] = True
+    Log("MinuteFuncList", MinuteFuncList)
+    
+def OnSecond(second):
+    #Log("SecondFuncList", SecondFuncList)               
+    # 秒计时器
+    copySecondFuncList = copy.copy(SecondFuncList)
+    for funcDict in copySecondFuncList:
+        if second == funcDict["second"]:
+            if funcDict["count"] != -1:
+                funcDict["count"] -= 1
+                
+            func = funcDict["func"]
+            
+            if funcDict["count"] == 0:
+                SecondFuncList.remove(funcDict)
+            func()
+            
 def run():    
-    print "run"
+    global g_hourt
+    global g_minute
+    global g_second
+    
     while True:
-    #    s=time.ctime()
-    #    length=len(s)
-    #    Log(length, s)
-    #    ErrLog(length, s)
         now = time.localtime(time.time())
         year, month, day, hour, minute, second, weekday, yearday, daylight = now
-        #print time.strftime("%c", now)
+        print time.strftime("%c", now)
         
-        Log("HourFuncList", HourFuncList)
-        # 小时计时器
-        for funcDict in copy.copy(HourFuncList):
-            # 已经运行过,并且不再可运行的条件之中
-            if funcDict["passed"] and hour != funcDict["hour"]:
-                funcDict["passed"] = False
-                continue
-            
-            if hour == funcDict["hour"]:
-                # 已经运行过就不再运行
-                if funcDict["passed"]:
-                    continue
-                copyDict = copy.copy(funcDict)
-                copyDict["count"] = 1
-                MinuteFuncList.append(copyDict)
-                    
-                if funcDict["count"] != -1:
-                    funcDict["count"] -= 1
+        # 首次
+        if g_hourt == -1:
+            OnHour(hour)
+            g_hourt = hour
+        else:
+            # 小时跳变
+            if minute == 0 and second ==0:
+                OnHour(hour)
+        # 首次
+        if g_minute == -1:
+            OnMinute(minute)
+            g_minute = minute
+        else:
+            # 分钟跳变
+            if second ==0:
+                OnMinute(minute)
                 
-                if funcDict["count"] == 0:
-                    HourFuncList.remove(funcDict)
-                # 此轮已经运行过
-                funcDict["passed"] = True 
-                
-        Log("MinuteFuncList", MinuteFuncList)
-        # 分钟计时器
-        for funcDict in copy.copy(MinuteFuncList):
-            # 已经运行过,并且不再可运行的条件之中
-            if funcDict["passed"] and minute != funcDict["minute"]:
-                funcDict["passed"] = False
-                continue
-            
-            if minute == funcDict["minute"]:
-                if funcDict["passed"]:
-                    continue
-                
-                copyDict = copy.copy(funcDict)
-                copyDict["count"] = 1
-                # 加入秒计时
-                SecondFuncList.append(copyDict)
-                
-                if funcDict["count"] != -1:
-                    funcDict["count"] -= 1
-                
-                
-                if funcDict["count"] == 0:
-                    MinuteFuncList.remove(funcDict)
-                # 此轮已经运行过
-                funcDict["passed"] = True
-        
-        Log("SecondFuncList", SecondFuncList)               
-        # 秒计时器
-        copySecondFuncList = copy.copy(SecondFuncList)
-        for funcDict in copySecondFuncList:
-            #Log("funcDict", funcDict)  
-            if second == funcDict["second"]:
-                if funcDict["count"] != -1:
-                    funcDict["count"] -= 1
-                    
-                func = funcDict["func"]
-                
-                if funcDict["count"] == 0:
-                    SecondFuncList.remove(funcDict)
-                
-                func()
-                print time.strftime("%c", now)
+        OnSecond(second)
         time.sleep(1)  #每30秒执行一次   
 
 
