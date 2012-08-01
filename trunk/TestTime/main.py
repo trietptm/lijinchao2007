@@ -19,11 +19,11 @@ def TestMinute():
 def TestHour():
     print "hour"
     
-#GameWorld.RegisterTime(TestSecond, 2, second, 0, 0)
-#GameWorld.RegisterTime(TestSecond, 2, second+1, 0, 0)
-#GameWorld.RegisterTime(TestMinute, 2, second, minute, 0)
-GameWorld.RegisterTime(TestMinute, 2, second+1, minute, 0)
-#GameWorld.RegisterTime(TestHour, 2, second, minute, hour )
-GameWorld.RegisterTime(TestHour, 2, second+1, minute, hour )
+GameWorld.RegisterTime(TestSecond, 3, second, 0, 0)
+GameWorld.RegisterTime(TestSecond, 3, second+1, 0, 0)
+GameWorld.RegisterTime(TestMinute, 3, second, minute, 0)
+GameWorld.RegisterTime(TestMinute, 3, second+1, minute, 0)
+GameWorld.RegisterTime(TestHour, 3, second, minute, hour )
+GameWorld.RegisterTime(TestHour, 3, second+1, minute, hour )
 GameWorld.run()
     
