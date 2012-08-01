@@ -58,11 +58,11 @@ def run():
     #    ErrLog(length, s)
         now = time.localtime(time.time())
         year, month, day, hour, minute, second, weekday, yearday, daylight = now
-        print time.strftime("%c", now)
+        #print time.strftime("%c", now)
         
         Log("HourFuncList", HourFuncList)
         # 小时计时器
-        for funcDict in HourFuncList:
+        for funcDict in copy.copy(HourFuncList):
             # 已经运行过,并且不再可运行的条件之中
             if funcDict["passed"] and hour != funcDict["hour"]:
                 funcDict["passed"] = False
@@ -86,7 +86,7 @@ def run():
                 
         Log("MinuteFuncList", MinuteFuncList)
         # 分钟计时器
-        for funcDict in MinuteFuncList:
+        for funcDict in copy.copy(MinuteFuncList):
             # 已经运行过,并且不再可运行的条件之中
             if funcDict["passed"] and minute != funcDict["minute"]:
                 funcDict["passed"] = False
@@ -112,7 +112,8 @@ def run():
         
         Log("SecondFuncList", SecondFuncList)               
         # 秒计时器
-        for funcDict in SecondFuncList:
+        copySecondFuncList = copy.copy(SecondFuncList)
+        for funcDict in copySecondFuncList:
             #Log("funcDict", funcDict)  
             if second == funcDict["second"]:
                 if funcDict["count"] != -1:
@@ -121,13 +122,10 @@ def run():
                 func = funcDict["func"]
                 
                 if funcDict["count"] == 0:
-                    Log("SecondFuncList", SecondFuncList) 
-                    Log("运行了", funcDict) 
                     SecondFuncList.remove(funcDict)
-                    Log("SecondFuncList", SecondFuncList) 
                 
                 func()
-        
+                print time.strftime("%c", now)
         time.sleep(1)  #每30秒执行一次   
 
 
