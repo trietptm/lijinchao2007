@@ -22,7 +22,7 @@ def TestHour():
 GameWorld.RegisterTime(TestSecond, 3, second)
 GameWorld.RegisterTime(TestSecond, 3, second+1)
 GameWorld.RegisterTime(TestMinute, 3, second, minute)
-GameWorld.RegisterTime(TestMinute, 3, second, minute+1)
+GameWorld.RegisterTime(TestMinute, 3, second+1, minute)
 GameWorld.RegisterTime(TestHour, 3, second, minute, hour)
 GameWorld.RegisterTime(TestHour, 3, second+1, minute, hour)
 GameWorld.run()
