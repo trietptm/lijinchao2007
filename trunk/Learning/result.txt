@@ -1,0 +1,8 @@
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    10001    0.326    0.000    0.326    0.000 :0(range)
+        1    0.001    0.001    0.001    0.001 :0(setprofile)
+        1    0.000    0.000    2.747    2.747 <string>:1(<module>)
+    10000    2.410    0.000    2.736    0.000 TestProfile.py:11(func1)
+        1    0.011    0.011    2.747    2.747 TestProfile.py:14(func2)
+        1    0.000    0.000    2.749    2.749 profile:0(func2())
+        0    0.000             0.000          profile:0(profiler)
