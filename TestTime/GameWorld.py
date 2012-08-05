@@ -95,12 +95,14 @@ def OnSecond(second):
             if funcDict["count"] == 0:
                 SecondFuncList.remove(funcDict)
             func()
-            
+
+RunTimes = 10
+Start = 0     
 def run():    
     global g_hourt
     global g_minute
     global g_second
-    
+    global Start
     while True:
         now = time.localtime(time.time())
         year, month, day, hour, minute, second, weekday, yearday, daylight = now
@@ -124,6 +126,9 @@ def run():
                 OnMinute(minute)
                 
         OnSecond(second)
+        if Start == RunTimes:
+            break
+        Start += 1
         time.sleep(1)  #每30秒执行一次   
 
 
