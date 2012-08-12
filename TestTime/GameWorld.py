@@ -1,4 +1,11 @@
 #coding:gbk
+import sys
+import os
+BaseDir = os.path.abspath(os.path.curdir)
+MongoManagerDir = os.path.join(BaseDir, "MongoManager")
+sys.path.append(MongoManagerDir)
+
+import MongoManager
 import log
 import time
 import copy
@@ -132,3 +139,5 @@ def run():
         time.sleep(1)  #每30秒执行一次   
 
 
+
+a()
