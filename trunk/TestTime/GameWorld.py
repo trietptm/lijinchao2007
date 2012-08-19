@@ -16,3 +16,7 @@ def RegisterTime(func, count=-1, second=-1, minute=-1, hour=-1):
     
 def RegisterTimerEx(name, interval, func, count = -1):
     MyTimer.RegisterTimerEx(name, interval, func, count)
+    
+def GetMongoManager():
+    MongoManager.GetMongoManager()
+    
