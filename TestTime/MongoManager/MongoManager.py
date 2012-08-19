@@ -14,6 +14,9 @@ import GameWorld
 Log = log.Log
 ErrLog = log.ErrLog
 
+# set get 是否开启cache
+OpenCache = False
+
 DBName = "test"
 #------------------------------------------------
 def DecodeDict(unicodeDict):
@@ -54,7 +57,7 @@ class MongoManager():
             item["isChange"] = False
             item = DecodeDict(item)
             tableList.append(item)
-        print repr(tableList)
+        print "ReadTable" + repr(tableList)
         self._CacheDict[tableName] = tableList
         self._TableKeyDict[tableName] = key
         
@@ -77,16 +80,30 @@ class MongoManager():
         tableObj.insert(keysValue)
         
         
-    def SetTableValue(self, tableName, key, keyValue, isCache = True, **keysValue):
+    def SetTableValue(self, tableName, key, keyValue, isCache = OpenCache, **keysValue):
         if isCache:
+            # 读取数据库
+            if not self._CacheDict.has_key(tableName):
+                self.ReadTable(key, tableName)
+                
             for item in self._CacheDict[tableName]:
                 if not item.has_key(key):
-                    ErrLog("某列%s 居然没有key:" %(item, key))
-                    return False
+                    #ErrLog("某列%s 居然没有key:%s " %(item, key))
+                    # 是个列表,继续寻找,直到找到
+                    continue
                 if item[key] == keyValue:
                     item.update(keysValue)
                     item["isChange"] = True
-                return True
+                    #print "SetTableValue" + str(item)
+                    return True
+            # 此条没有创建过
+            item = {}
+            item["isChange"] = True
+            item[key] = keyValue
+            item.update(keysValue)
+            print "SetTableValue(create):" + str(item)
+            self._CacheDict[tableName].append(item)
+            return True
         
         tableObj = self.GetTable(tableName)
         if not isinstance(key, str):
@@ -104,12 +121,16 @@ class MongoManager():
         
     def GetTableValue(self, tableName, key, keyValue, isCache = True):
         if isCache:
+            # 读取数据库
+            if not self._CacheDict.has_key(tableName):
+                self.ReadTable(key, tableName)
             for item in self._CacheDict[tableName]:
                 if not item.has_key(key):
                     ErrLog("某列%s 居然没有key:" %(item, key))
                     return {}
                 if item[key] == keyValue:
                     return item
+                return {}
                 
         tableObj = self.GetTable(tableName)
         if not isinstance(key, str):
@@ -127,7 +148,7 @@ class MongoManager():
     # 传参无效,删除全部
     def RemoveTable(self, tableName, **keysValue):
         if self._TableDict.has_key(tableName):
-            print str(keysValue)
+            print "RemoveTable" + str(keysValue)
             self._TableDict[tableName].remove(**keysValue)
     
     # 定时保存
@@ -136,7 +157,10 @@ class MongoManager():
         Log("MongoManager.Save")
         for tableName, tableList in self._CacheDict.items():
             keyName = self._TableKeyDict[tableName]
+            print "Save" + str(tableList)
             for item in tableList:
+                #print "Save" + str(item)
+                print keyName
                 if item["isChange"]:
                     self.SetTableValue(tableName, \
                                        keyName, item[keyName], False, **item)
@@ -151,6 +175,6 @@ def GetMongoManager():
     return g_mongoManager
 
 if __name__ == '__main__':
-    GetMongoManager().SetTableValue("test", "dd", 2, c="4")
-    GetMongoManager().SetTableValue("test", "d", 2, c=3)
+    GetMongoManager().SetTableValue("test", "dd", 2, c="22")
+    GetMongoManager().SetTableValue("test", "dd", 3, c=33)
     print GetMongoManager().GetTableValue("test", "dd", 2)

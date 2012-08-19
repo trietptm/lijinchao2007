@@ -1,7 +1,8 @@
 #coding:gbk
-#用户表
+#用户表  set get 默认开启cache
 
 #@verson=1.0
+
 
 #------------------------------------------------
 import log
@@ -32,10 +33,10 @@ class PlayerTable():
         
     def SetSex(self, playerID,  value):
         temDict = {"sex":value}
-        self._dbManager.SetTableValue(self._tableName, self._key, playerID, **temDict)
+        self._dbManager.SetTableValue(self._tableName, self._key, playerID, True, **temDict)
     
     def GetSex(self, playerID):
-        return self._dbManager.GetTableValue(self._tableName, self._key, playerID)
+        return self._dbManager.GetTableValue(self._tableName, self._key, playerID, True)
     
     def SetAge(self, playerID, value):
         pass
@@ -62,8 +63,9 @@ def GetPlayerTable():
 
 
 if __name__ == '__main__':
-    GetPlayerTable().SetSex(1, "boy11")
+    GetPlayerTable().SetSex(1, "boy111")
     print GetPlayerTable().GetSex(1)
+    print GetPlayerTable().GetSex(2)
     print '**********'
     #MongoManager.GetMongoManager().Save()
 #    GetPlayerTable().InitPlayer(2, **{"sex":"boy", "age":18})
