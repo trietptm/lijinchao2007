@@ -38,5 +38,5 @@ public class AndroidMainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.activity_android_main, menu);
 		return true;
 	}
-
+	
 }
