@@ -1,5 +1,6 @@
-#Sun Aug 05 12:34:10 CST 2012
+#Sat Aug 11 01:04:17 CST 2012
 eclipse.preferences.version=1
 encoding/Template.py=gbk
+encoding/TestMongo.py=gbk
 encoding/TestProfile.py=gbk
 encoding/TestServerTime.py=gbk
