@@ -1,0 +1,46 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MFCTest - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/MFCTest.res" /d "_DEBUG" /d "_AFXDLL" "E:\svn\test\MFCTest\MFCTest.rc"" 
+Creating temporary file "C:\Users\joshua\AppData\Local\Temp\RSP65D0.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/MFCTest.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\svn\test\MFCTest\MainFrm.cpp"
+"E:\svn\test\MFCTest\MFCTest.cpp"
+"E:\svn\test\MFCTest\MFCTestDoc.cpp"
+"E:\svn\test\MFCTest\MFCTestView.cpp"
+]
+Creating command line "cl.exe @C:\Users\joshua\AppData\Local\Temp\RSP65D0.tmp" 
+Creating temporary file "C:\Users\joshua\AppData\Local\Temp\RSP65D1.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/MFCTest.pdb" /debug /machine:I386 /out:"Debug/MFCTest.exe" /pdbtype:sept 
+.\Debug\MainFrm.obj
+.\Debug\MFCTest.obj
+.\Debug\MFCTestDoc.obj
+.\Debug\MFCTestView.obj
+.\Debug\StdAfx.obj
+.\Debug\MFCTest.res
+]
+Creating command line "link.exe @C:\Users\joshua\AppData\Local\Temp\RSP65D1.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+MainFrm.cpp
+MFCTest.cpp
+MFCTestDoc.cpp
+MFCTestView.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+MFCTest.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: DlgTest - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\joshua\AppData\Local\Temp\RSPF9F7.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/DlgTest.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\svn\test\MFCTest\DlgTest\DlgTestDlg.cpp"
+]
+Creating command line "cl.exe @C:\Users\joshua\AppData\Local\Temp\RSPF9F7.tmp" 
+Creating temporary file "C:\Users\joshua\AppData\Local\Temp\RSPF9F8.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/DlgTest.pdb" /debug /machine:I386 /out:"Debug/DlgTest.exe" /pdbtype:sept 
+.\Debug\DlgTest.obj
+.\Debug\DlgTestDlg.obj
+.\Debug\StdAfx.obj
+.\Debug\DlgTest.res
+.\Debug\NewButton.obj
+.\Debug\Prop1.obj
+.\Debug\PropSheet.obj
+.\Debug\Prop2.obj
+]
+Creating command line "link.exe @C:\Users\joshua\AppData\Local\Temp\RSPF9F8.tmp"
+<h3>Output Window</h3>
+Compiling...
+DlgTestDlg.cpp
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/DlgTest.bsc"  .\Debug\StdAfx.sbr .\Debug\DlgTest.sbr .\Debug\DlgTestDlg.sbr .\Debug\NewButton.sbr .\Debug\Prop1.sbr .\Debug\PropSheet.sbr .\Debug\Prop2.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+DlgTest.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
